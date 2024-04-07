@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>signup</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>    
+  <section class="vh-100 gradient-custom">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-6">
+          <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                                    <!-- Notifications container -->
+                                    {% comment %} <div class="container">
+                                      {% for message in messages %}
+                                      <div class="alert 
+                                      {% if message.tags == 'success' %}alert-success
+                                      {% elif message.tags == 'error' %}alert-danger
+                                      {% elif message.tags == 'warning' %}alert-warning
+                                      {% endif %} alert-dismissible fade show" role="alert">
+                                          <strong>Message:</strong> {{ message }}
+                                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                          </button>
+                                      </div>
+                                      {% endfor %}
+                                  </div> {% endcomment %}
+            <div class="card-body px-5 text-center">
+  
+              <div class="mb-md-5 mt-md-4 pb-5">
+                <h2 class="fw-bold mb-2 text-uppercase">Signup</h2>
+                <p class="text-white-50 mb-5">Create your account</p>
+                <form id='signup-form' action={% url 'signup' %} method='POST'>
+                  {% csrf_token %}
+                  <div class="d-flex justify-content-between">
+                    <div class="form-outline px-2 form-white mb-4">
+                      <label class="form-label" for="typeEmailX1">Username</label>
+                      <input type="text" id="username" name="username" class="form-control form-control-lg" />
+                    </div>
+                    <div class="form-outline px-2 form-white mb-4">
+                      <label class="form-label" for="typeEmailX2">phone number</label>
+                      <input type="phoneno" id="phoneno" name="phoneno" class="form-control form-control-lg" />
+                    </div>
+                  </div>
+  
+                  <div class="d-flex justify-content-between">
+                    <div class="form-outline px-2 form-white mb-4">
+                      <label class="form-label" for="typeEmailX1">First name</label>
+                      <input type="text"  id="first_name" name="first_name" class="form-control form-control-lg" />
+                    </div>
+                    <div class="form-outline px-2 form-white mb-4">
+                      <label class="form-label" for="typeEmailX2">Last name</label>
+                      <input type="text" id="last_name" name="last_name" class="form-control form-control-lg" />
+                    </div>
+                  </div>
+  
+                  <div class="d-flex justify-content-between">
+                    <div class="form-outline px-2 form-white mb-4 col-12">
+                      <label class="form-label" for="typeEmailX2">Email</label>
+                      <input type="email" id="email" name="email" class="form-control form-control-lg" />
+                    </div>
+                  </div>
+  
+                  <div class="d-flex justify-content-between">
+                    <div class="form-outline px-2 form-white mb-4">
+                      <label class="form-label" for="typeEmailX1">Password</label>
+                      <input type="password" id="password" name="password" class="form-control form-control-lg" />
+                    </div>
+                    <div class="form-outline px-2 form-white mb-4">
+                      <label class="form-label" for="typeEmailX2">Confirm password</label>
+                      <input type="password"  id="confirm_pass" name="confirm_pass" class="form-control form-control-lg" />
+                    </div>
+                  </div>
+                  
+                  <button class="btn btn-outline-light btn-lg px-5" type="submit">Sign Up</button>
+                </form>
+                <div>
+                  <p class="mb-0 mt-2">Already have an account? <a href="{% url 'login' %}" class="text-white-50 fw-bold">Login</a></p>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+  
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    
+    <script>
+
+      $(document).ready(function() {
+        $('#signup-form').submit(function(event) {
+            console.log("Form submitted!");
+            event.preventDefault();
+            
+            // Form validation
+            var username = $('#username').val();
+            var first_name = $('#first_name').val();
+            var email = $('#email').val();
+            var phoneno = $('#phoneno').val();
+            var password = $('#password').val();
+            var confirm_pass = $('#confirm_pass').val();
+            
+            if (!phoneno || phoneno.trim() === '') {
+                alert('Please enter a phone number.');
+                return;
+            }
+            if (password !== confirm_pass) {
+                alert('Password does not match.');
+                return;
+            }
+            if (!username || username.trim() === '') {
+                alert('Please enter a username.');
+                return;
+            }
+            if (!email || email.trim() === ''){
+                alert("Please enter your email");
+                return;
+            }
+            if (!first_name || first_name.trim() === ''){
+                alert("Please enter your first name");
+                return;
+            }
+    
+            // Serialize form data and send AJAX request
+            var formData = $(this).serialize();
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                dataType: 'json', // Expect JSON response
+                success: function(response) {
+                    console.log("Response:", response);
+                    alert(response.message);
+                    if (response.redirect) {
+                        window.location.href = response.redirect;
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    if (xhr.status === 400) {
+                        var responseJson = xhr.responseJSON;
+                        alert(responseJson.message);
+                    } else {
+                        console.error(xhr.status + ": " + xhr.responseText);
+                    }
+                }
+            });
+        });
+    });
+    
+    
+    </script>
+</body>
+</html>

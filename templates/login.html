@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>    
+<section class="vh-100 gradient-custom">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card bg-dark text-white" style="border-radius: 1rem;">
+          <div class="card-body px-5 text-center">
+
+            <div class="mb-md-5 mt-md-4 pb-5">
+
+              <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+              <p class="text-white-50 mb-5">Please enter your email and password!</p>
+
+              <form id='login-form' action={% url 'login' %} method="post">
+                {% csrf_token %}
+                <div class="form-outline form-white mb-4">
+                  <label class="form-label">Email</label>
+                  <input type="email" id="email" name='email' class="form-control form-control-lg" />
+                </div>
+  
+                <div class="form-outline form-white mb-4">
+                  <label class="form-label" >Password</label>
+                  <input type="password" id="password" name='password' class="form-control form-control-lg" />
+                </div>
+                <button class="btn btn-outline-light btn-lg px-5" type="submit"><a class='' href='{% url 'logout' %}'>Login</a></button>
+
+              </form>
+            </div>
+            <div>
+              <p class="mb-0">Don't have an account? <a href={% url 'signup' %} class="text-white-50 fw-bold">Sign Up</a>
+              </p>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+
+      var token = localStorage.getItem('token');
+      if (token) {
+          // Redirect to home page if token is present
+          console.log("token is present")
+          window.location.href = '/profile';
+      }
+
+      document.getElementById('login-form').addEventListener('submit', function(event) {
+          event.preventDefault();
+          var formData = new FormData(this);
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', '/');
+          xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+          xhr.onload = function() {
+              if (xhr.status === 200) {
+                  var response = JSON.parse(xhr.responseText);
+                  if (response.token) {
+                      // Store token securely (e.g., localStorage)
+                      localStorage.setItem('token', response.token);
+                      window.location.href = '/profile';
+                  } else {
+                      // Handle error, token not found in response
+                      alert('Token not found in response');
+                  }
+              } else {
+                  // Handle error, login failed
+                  alert('Login failed');
+                  console.log("response:::::", response.message)
+              }
+          };
+          xhr.send(formData);
+        });
+    </script>
+
+</body>
+</html>
